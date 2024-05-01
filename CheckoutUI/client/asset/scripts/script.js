@@ -108,12 +108,12 @@ var checkout = async() => {
             $("#qr").css("display", "grid");
 
         });
+
+    // Delete all products
+    await deleteProducts();
+
     setTimeout(function(){
         $("#qr").css("display", "none");
         $("#success").css("display", "grid");
-            },10000);
-        
-
-    // window.location.href = "upi://pay?pa=shebinjosejacob2014@oksbi&pn=TXN9656549238&tn=A&am=1&cu=INR&url=https://assettracker.cf/"*/
-    deleteProducts();
+    }, 10000);
 }
