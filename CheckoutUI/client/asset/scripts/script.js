@@ -1,8 +1,6 @@
 var InitialCount = -1;
 
-
-
-const deleteProducts = async() => {
+const deleteProducts = async () => {
     url = 'https://autobill-main-8knj.onrender.com/product';
 
     let res = await axios.get(url);
@@ -11,7 +9,6 @@ const deleteProducts = async() => {
 
     for (let product of products) {
         const response = await axios.delete(`https://autobill-main-8knj.onrender.com/product/${product.id}`)
-
     }
     location.reload();
     window.scroll({
@@ -21,7 +18,7 @@ const deleteProducts = async() => {
     });
 }
 
-const loadProducts = async() => {
+const loadProducts = async () => {
     url = 'https://autobill-main-8knj.onrender.com/product';
 
     let res = await axios.get(url);
@@ -38,7 +35,6 @@ const loadProducts = async() => {
         console.log(products);
         for (let product of products) {
             payable = payable + parseFloat(product.payable);
-
         }
 
         var product = products.pop();
@@ -72,11 +68,9 @@ const loadProducts = async() => {
         document.getElementById('2').innerHTML = "CHECKOUT $" + payable;
         InitialCount += 1;
     }
-
-
 }
 
-var checkout = async() => {
+const checkout = async () => {
     document.getElementById('2').innerHTML = "<span class='loader-16' style='margin-left: 44%;'></span>"
     var payable = 0;
     url = 'https://autobill-main-8knj.onrender.com/product';
@@ -92,10 +86,10 @@ var checkout = async() => {
     var url = "https://api.scanova.io/v2/qrcode/text?data=upi%3A%2F%2Fpay%3Fpa%3Dshebinjosejacob2014%40oksbi%26pn%3DTXN965654954321%26tn%3DA%26am%3D4%26cu%3DINR%26url%3Dhttps%3A%2F%2Fcoderscafe.cf%2F&size=l&error_correction=M&data_pattern=RECT&eye_pattern=TLBR_LEAF&data_gradient_style=Radial&data_gradient_start_color=%2302c8db&data_gradient_end_color=%2302c8db&eye_color_inner=%2302c8db&eye_color_outer=%2302c8db&background_color=%23ecf0f3&logo.size=15&logo.excavated=true&logo.angle=0&poster.left=50&poster.top=50&poster.size=40&poster.eyeshape=ROUND_RECT&poster.dataPattern=ROUND&format=png&apikey=fmdtvmmwccekndkpalsltpzhvfmnpsmuhrvhpxzf";
 
     await fetch(url)
-        .then(function(data) {
+        .then(function (data) {
             return data.blob();
         })
-        .then(function(img) {
+        .then(function (img) {
             var image = URL.createObjectURL(img);
             $("#home").css("display", "none");
             $("#final").css("display", "none");
@@ -108,12 +102,12 @@ var checkout = async() => {
             $("#qr").css("display", "grid");
 
         });
-    setTimeout(function(){
+
+    // Delete all products
+    await deleteProducts();
+
+    setTimeout(function () {
         $("#qr").css("display", "none");
         $("#success").css("display", "grid");
-            },10000);
-        
-
-    // window.location.href = "upi://pay?pa=shebinjosejacob2014@oksbi&pn=TXN9656549238&tn=A&am=1&cu=INR&url=https://assettracker.cf/"*/
-    deleteProducts();
+    }, 10000);
 }
