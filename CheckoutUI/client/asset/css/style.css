@@ -74,7 +74,7 @@ main {
 
 .card-long {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(1, auto);
     grid-row-gap: 0.5rem;
     grid-column-gap: 1rem;
@@ -132,10 +132,25 @@ main {
     vertical-align: super;
     font-weight: 800;
 }
+.card__weight {
+    display: inline-block;
+    grid-column: 6 / span 1;
+    grid-row: 1;
+    align-self: center;
+    font-size: 1rem;
+    text-transform: uppercase;
+    box-shadow: inset 8px 8px 8px #cbced1, inset -8px -8px 8px #fff;
+    color: black;
+    border-radius: 25px;
+    padding: 15px 25px;
+    text-align: center;
+    vertical-align: super;
+    font-weight: 800;
+}
 
 .card__amount {
     display: inline-block;
-    grid-column: 6 / span 1;
+    grid-column: 7 / span 1;
     grid-row: 1;
     align-self: center;
     font-size: 1rem;
