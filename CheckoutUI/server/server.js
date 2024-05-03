@@ -22,9 +22,11 @@ app.post('/product', (req, res) => {
     // output the product to the console for debugging
     console.log(product);
     for (let i of products) {
+        console.log(i,product)
         if (product.name == i.name) {
             products.taken += 1;
-            break;
+            console.log("Same item detected");
+            return;
         }
     }
     products.push(product);
