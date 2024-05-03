@@ -24,7 +24,7 @@ app.post('/product', (req, res) => {
     for (let i of products) {
         console.log(i,product)
         if (product.name == i.name) {
-            products.taken += 1;
+            i.taken += 1;
             console.log("Same item detected");
             return;
         }
