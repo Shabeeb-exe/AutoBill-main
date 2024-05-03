@@ -21,6 +21,13 @@ app.post('/product', (req, res) => {
 
     // output the product to the console for debugging
     console.log(product);
+    for (let i = 0; i < products.length; i++) {
+        let pro = products[i];
+
+        if (product.name === pro.name) {
+            products.taken += 1;
+        }
+    }
     products.push(product);
 
     res.send('Product is added to the database');
