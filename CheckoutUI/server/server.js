@@ -20,15 +20,15 @@ app.post('/product', (req, res) => {
     const product = req.body;
 
     // output the product to the console for debugging
-    console.log(product);
-    for (let i of products) {
-        console.log(i,product)
-        if (product.name == i.name) {
-            i.taken += 1;
-            console.log("Same item detected");
-            return;
-        }
-    }
+    // console.log(product);
+    // for (let i of products) {
+    //     console.log(i,product)
+    //     if (product.name == i.name) {
+    //         i.taken += 1;
+    //         console.log("Same item detected");
+    //         return;
+    //     }
+    // }
     products.push(product);
 
     res.send('Product is added to the database');
