@@ -21,11 +21,10 @@ app.post('/product', (req, res) => {
 
     // output the product to the console for debugging
     console.log(product);
-    for (let i = 0; i < products.length; i++) {
-        let pro = products[i];
-
-        if (product.name === pro.name) {
+    for (let i of products) {
+        if (product.name == i.name) {
             products.taken += 1;
+            break;
         }
     }
     products.push(product);
