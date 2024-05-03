@@ -59,7 +59,7 @@ const loadProducts = async() => {
                         <span>${product.taken} ${product.units}</span>
                     </div>
                     <div class="span3">Weight(g)</div>
-                    <div class="card__unit">
+                    <div class="card__weight">
                         <span>${product.weight}</span>
                     </div>
 
