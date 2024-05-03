@@ -222,6 +222,17 @@ main {
     font-weight: 700;
     padding-left: 15%;
 }
+.span5 {
+    display: inline-block;
+    grid-column: 7 / span 1;
+    grid-row: 1;
+    align-self: top;
+    font-size: 0.7rem;
+    padding-top: 5%;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding-left: 15%;
+}
 
 .checkout {
     display: none;
