@@ -45,7 +45,7 @@ const loadProducts = async() => {
         const x = `
         <section>
                 <div class="card card-long animated fadeInUp once">
-                    <img src="asset/img/${product.id}.jpg" class="album">
+                    <img src="asset/img/${product.name}.jpg" class="album">
                     <div class="span1">Product Name</div>
                     <div class="card__product">
                         <span>${product.name}</span>
@@ -56,7 +56,7 @@ const loadProducts = async() => {
                     </div>
                     <div class="span3">Units</div>
                     <div class="card__unit">
-                        <span>${product.taken} ${product.unit}</span>
+                        <span>${product.taken} ${product.units}</span>
                     </div>
 
                     <div class="span4">Payable</div>
@@ -69,7 +69,7 @@ const loadProducts = async() => {
         `
 
         document.getElementById('home').innerHTML = document.getElementById('home').innerHTML + x;
-        document.getElementById('2').innerHTML = "CHECKOUT $" + payable;
+        document.getElementById('2').innerHTML = "CHECKOUT ₹" + payable;
         InitialCount += 1;
     }
 
