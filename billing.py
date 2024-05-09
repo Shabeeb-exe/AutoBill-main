@@ -10,6 +10,7 @@ from edge_impulse_linux.image import ImageImpulseRunner
 import RPi.GPIO as GPIO 
 from hx711 import HX711
 
+
 import requests
 import json
 from requests.structures import CaseInsensitiveDict
@@ -17,21 +18,27 @@ from requests.structures import CaseInsensitiveDict
 runner = None
 show_camera = True
 
-c_value = 0
-flag = 0
-ratio = -1363.992
 
-global id_product = 1
+hx = HX711(5, 18)
+hx.set_reading_format("MSB", "MSB")
+referenceUnit = 108
+hx.set_reference_unit(referenceUnit)
+hx.reset()
+hx.tare()
+
+flag = 0
+
+id_product = 1
 list_label = []
 list_weight = []
 count = 0
 final_weight = 0
-taken = 0
+taken = 1
 
-a = 'Apple'
-b = 'Banana'
+a = 'Tomato'
+b = 'Brush'
 l = 'Lays'
-c = 'Coke'
+c = 'Tata salt'
 
 def now():
     return round(time.time() * 1000)
@@ -66,86 +73,74 @@ def help():
 def find_weight():
     global c_value
     global hx
-    if c_value == 0:
-        print('Calibration starts')
-        try:
-          GPIO.setmode(GPIO.BCM)
-          hx = HX711(dout_pin=20, pd_sck_pin=21)
-          err = hx.zero()
-          if err:
-            raise ValueError('Tare is unsuccessful.')
-          hx.set_scale_ratio(ratio)
-          c_value = 1
-        except (KeyboardInterrupt, SystemExit):
-          print('Bye :)')
-        print('Calibrate ends')	
-    else :
-          GPIO.setmode(GPIO.BCM)
-          time.sleep(1)
-          try:
-                weight = int(hx.get_weight_mean(20))
-                #round(weight,1)
-                print(weight, 'g')
-                return weight
-          except (KeyboardInterrupt, SystemExit):
-                print('Bye :)')
+    try:
+        weight = max(0,int(hx.get_weight(5)))
+        #round(weight,1)
+        print(weight, 'g')
+        return weight
+    except (KeyboardInterrupt, SystemExit):
+        print('Bye :)')
                
-def post(label,price,final_rate,taken):
-    global id
-    url = "https://autobill-main-8knj.onrender.com"
+def post(label,price,weight, final_rate,take):
+    global id_product
+    global list_label
+    global list_weight 
+    global count
+    global final_weight
+    global taken
+    url = "https://autobill-main-8knj.onrender.com/product"
     headers = CaseInsensitiveDict()
     headers["Content-Type"] = "application/json"
-    data_dict = {"id":id_product,"name":label,"price":price,"units":"units","taken":taken,"payable":final_rate}
+    data_dict = {"id":id_product,"name":label,"price":price,"units":"units","taken":1,"weight":weight,  "payable":final_rate}
     data = json.dumps(data_dict)
     resp = requests.post(url, headers=headers, data=data)
     print(resp.status_code)
     id_product = id_product + 1  
-    time.sleep(1)
+    time.sleep(3)
     list_label = []
     list_weight = []
     count = 0
     final_weight = 0
-    taken = 0
+    taken = 1
                 
 def list_com(label,final_weight):
     global count
     global taken
     if final_weight > 2 :	
        list_weight.append(final_weight)
-       if count > 1 and list_weight[-1] > list_weight[-2]:
-           taken = taken + 1
+    #    if count > 1 and list_weight[-1]  >list_weight[-2]:
+    #        taken = taken + 1
+    #    taken = taken + 1
     list_label.append(label)
-    count = count + 1
-    print('count is',count)
-    time.sleep(1)
-    if count > 1:
-        if list_label[-1] != list_label[-2] :
-           print("New Item detected")
-           print("Final weight is",list_weight[-1])
-           rate(list_weight[-2],list_label[-2],taken)          
+    print("New Item detected")
+    print("Final weight is",final_weight)
+    rate(final_weight,label,1)   
+    print("Place next item...")       
+    time.sleep(5)
 	
 def rate(final_weight,label,taken):
     print("Calculating rate")
     if label == a :
          print("Calculating rate of",label)
-         final_rate_a = final_weight * 0.01  
-         price = 10     
-         post(label,price,final_rate_a,taken)
-    elif label ==b :
+         final_rate_a = final_weight * 0.001  
+         price = 40     
+         post(label,price,final_weight, final_rate_a * price,taken)
+    elif label == b :
          print("Calculating rate of",label)
-         final_rate_b = final_weight * 0.02
          price = 20
-         post(label,price,final_rate_b,taken)
+         final_rate_b = price * taken
+         post(label,price,final_weight,final_rate_b,taken)
     elif label == l:
          print("Calculating rate of",label)
-         final_rate_l = 1
-	 price = 1
-         post(label,price,final_rate_l,taken)
+         price = 10
+         final_rate_l = price * taken
+         post(label,price,final_weight,final_rate_l,taken)
     else :
          print("Calculating rate of",label)
-         final_rate_c = 2
-	 price = 2
-         post(label,price,final_rate_c,taken)
+         final_rate_c = final_weight * 0.001  
+         price = 25     
+         post(label,price,final_weight, final_rate_c * price,taken)
+
 def main(argv):
     global flag
     global final_weight
@@ -207,21 +202,24 @@ def main(argv):
 
                 # print('classification runner response', res)
 
-                if "classification" in res["result"].keys():
+                if "bounding_boxes" in res["result"].keys():
+                    if len(res["result"]['bounding_boxes']) == 0:
+                        continue
+                    bbox = max(res['result']['bounding_boxes'], key=lambda x:x['value'])
+                    score = bbox['value']
+                    label = bbox['label']        
+                    if score > 0.9 :
+                        final_weight = find_weight()
+                        list_com(label,final_weight)
+                        if label == a:
+                            print('Tomato detected')       
+                        elif label == b:
+                            print('Brush detected')
+                        elif label == l:
+                            print('Lays deteccted')
+                        elif label == c:
+                            print('Tata salt detected')
                     print('Result (%d ms.) ' % (res['timing']['dsp'] + res['timing']['classification']), end='')
-                    for label in labels:
-                        score = res['result']['classification'][label]
-                        if score > 0.9 :
-                            final_weight = find_weight()
-                            list_com(label,final_weight)
-                            if label == a:
-                                print('Apple detected')       
-                            elif label == b:
-                                print('Banana detected')
-                            elif label == l:
-                                print('Lays deteccted')
-                            else :
-                                print('Coke detected')
                     print('', flush=True)
                 next_frame = now() + 100
         finally:
